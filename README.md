@@ -30,9 +30,9 @@ Apache Camel fourni de nombreux composants pour la réalisation de ces EIP, exem
 
 ### Eléments de base Camel - Route, Processor et Endpoint
 
-* Une route décrit un canal (channel) entre deux endpoints ou plus pouvant faire appel à des processors.
+* Une route décrit un canal (*channel*) entre deux endpoints ou plus, pouvant faire appel à des processors.
 	* Elle véhicule des messages sous forme d'objet Exchange, contenant des headers et un body. C'est le body qui contient les données.
-* Une route ne possède qu'un seul point d'entrée (from) et une ou plusieurs sorties (to). Elles peuvent s'enchainer, s'imbriquer, etc.
+* Une route ne possède qu'un seul point d'entrée (**from**) et une ou plusieurs sorties (**to**). Elles peuvent s'enchainer, s'imbriquer, etc.
 * Les processors permettent de réaliser un ou plusieurs traitements.
 * Les endpoints sont généralement décrits par une URI et correspondent à des ressources (JPA, Fichiers, ...).
 
@@ -41,11 +41,11 @@ Nous utiliserons JAVA pour nos déclarations.
 
 Toutes les déclarations doivent se faire au sein d'un CamelContext.
 
-## Initialiation du projet
+## Initialiation du projet - pom.xml
 
-Nous utiliserons SpringBoot comme base à notre application.
+Nous utiliserons SpringBoot comme base d'application.
 
-Dans le pom.xml :
+Dépendances SpringBoot :
 ```xml
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -58,4 +58,102 @@ Dans le pom.xml :
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 	</dependencies>
+```
+
+Pour démarrer l'application, il faudra exécuter la commande maven `mvn spring-boot:run`.
+
+Pour l'utilisation de Camel, il faut ajouter la librairie principale :
+
+```xml
+<!-- Camel -->
+<dependency>
+	<groupId>org.apache.camel</groupId>
+	<artifactId>camel-core</artifactId>
+	<version>${camel.version}</version>
+</dependency>
+```
+
+Ainsi que la dépendance suivante pour la déclaration en Java des routes :
+
+```xml
+<dependency>
+	<groupId>org.apache.camel</groupId>
+	<artifactId>camel-spring-javaconfig</artifactId>
+	<version>${camel.version}</version>
+</dependency>
+```
+
+Et pour l'utilisation de cron, on ajoute camel-quartz :
+```xml
+<dependency>
+	<groupId>org.apache.camel</groupId>
+	<artifactId>camel-quartz2</artifactId>
+	<version>${camel.version}</version>
+</dependency>
+```
+
+Côté Java, les routes Camel seront définies dans la classe RouteConfig :
+
+```java
+/** Configuration d'un CamelContext */
+@Configuration
+public class RouteConfig extends SingleRouteCamelConfiguration {
+	/** Logger */
+	static final Logger LOG = LoggerFactory.getLogger(RouteConfig.class);
+
+	/* Jobs Name */
+	public static final String JOB_TEST_LOG = "TEST_LOGS";
+
+	/* Crons */
+	public static final String CRON_DEFAULT_MIN = "0+*+*+*+*+?";
+	public static final String CRON_DEFAULT_SEC = "*+*+*+*+*+?";
+
+	/** Configuration des routes
+	 *
+	 * @see org.apache.camel.spring.javaconfig.SingleRouteCamelConfiguration#route() */
+	@Bean
+	@Override
+	public RouteBuilder route() {
+		return new RouteBuilder() {
+			@Override
+			public void configure() throws Exception {
+				/** Route HelloWorld - Log **/
+				/* Expression cron de déclenchement */
+				from("quartz2://" + JOB_TEST_LOG + "?cron=" + CRON_DEFAULT_SEC)
+						/* Prise en compte d'une plage horaire pour le démarrage et l'arrêt automatique de la route */
+						.routePolicy(plageHoraire())
+						/* AutoStartUp : démarrage automatique de la route au lancement de l'appli en fonction de la plage horaire */
+						.autoStartup(isAutoStartedRoute(plageHoraire()))
+						/* Définition d'un id pour la route */
+						.routeId(JOB_TEST_LOG)
+						// .setBody(simple("Simple Hello..."))
+						// .to("log:fr.cameldemo.RouteConfig?level=INFO&groupSize=5");
+						.log(LoggingLevel.INFO, "Hello World !");
+			}
+		};
+	}
+
+	/** Définition d'une plage horaire pour le démarrage et l'arrêt des routes
+	 *
+	 * @return CronScheduledRoutePolicy */
+	public static CronScheduledRoutePolicy plageHoraire() {
+		/* Démarrage tous les jours à 6 heures */
+		CronScheduledRoutePolicy cronGeneral = new CronScheduledRoutePolicy();
+		cronGeneral.setRouteStartTime("0 0 6 * * ?");
+		/* Arrêt tous les jours à 20 heures */
+		cronGeneral.setRouteStopTime("0 0 20 * * ?");
+		return cronGeneral;
+	}
+
+	/** Permet de vérifier si on est dans la plage horaire de la policy en paramètre
+	 *
+	 * @return true si dans la plage horaire */
+	public static boolean isAutoStartedRoute(final CronScheduledRoutePolicy csrp) {
+		CronTrigger ctstart = new CronTrigger(csrp.getRouteStartTime(), TimeZone.getDefault());
+		CronTrigger ctstop = new CronTrigger(csrp.getRouteStopTime(), TimeZone.getDefault());
+		SimpleTriggerContext context = new SimpleTriggerContext();
+		boolean isAutoStartedRoute = ctstart.nextExecutionTime(context).compareTo(ctstop.nextExecutionTime(context)) > 0;
+		return isAutoStartedRoute;
+	}
+}
 ```

@@ -13,7 +13,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.SimpleTriggerContext;
 
-@Configuration("One")
+/** Configuration d'un CamelContext */
+@Configuration
 public class RouteConfig extends SingleRouteCamelConfiguration {
 	/** Logger */
 	static final Logger LOG = LoggerFactory.getLogger(RouteConfig.class);
@@ -25,6 +26,9 @@ public class RouteConfig extends SingleRouteCamelConfiguration {
 	public static final String CRON_DEFAULT_MIN = "0+*+*+*+*+?";
 	public static final String CRON_DEFAULT_SEC = "*+*+*+*+*+?";
 
+	/** Configuration des routes
+	 *
+	 * @see org.apache.camel.spring.javaconfig.SingleRouteCamelConfiguration#route() */
 	@Bean
 	@Override
 	public RouteBuilder route() {
@@ -47,7 +51,7 @@ public class RouteConfig extends SingleRouteCamelConfiguration {
 		};
 	}
 
-	/** Définition d'une plage horaire générale pour le démarrage et l'arrêt des chargements jobs
+	/** Définition d'une plage horaire pour le démarrage et l'arrêt des routes
 	 *
 	 * @return CronScheduledRoutePolicy */
 	public static CronScheduledRoutePolicy plageHoraire() {
@@ -59,6 +63,9 @@ public class RouteConfig extends SingleRouteCamelConfiguration {
 		return cronGeneral;
 	}
 
+	/** Permet de vérifier si on est dans la plage horaire de la policy en paramètre
+	 *
+	 * @return true si dans la plage horaire */
 	public static boolean isAutoStartedRoute(final CronScheduledRoutePolicy csrp) {
 		CronTrigger ctstart = new CronTrigger(csrp.getRouteStartTime(), TimeZone.getDefault());
 		CronTrigger ctstop = new CronTrigger(csrp.getRouteStopTime(), TimeZone.getDefault());
