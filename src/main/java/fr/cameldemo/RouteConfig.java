@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.SimpleTriggerContext;
 
-@Configuration
+@Configuration("One")
 public class RouteConfig extends SingleRouteCamelConfiguration {
 	/** Logger */
 	static final Logger LOG = LoggerFactory.getLogger(RouteConfig.class);
@@ -21,8 +21,9 @@ public class RouteConfig extends SingleRouteCamelConfiguration {
 	/* Jobs Name */
 	public static final String JOB_TEST_LOG = "TEST_LOGS";
 
-	public static final String CRON_DEFAULT_SEC = "0+*+*+*+*+?";
-	public static final String CRON_DEFAULT_MIN = "*+*+*+*+*+?";
+	/* Crons */
+	public static final String CRON_DEFAULT_MIN = "0+*+*+*+*+?";
+	public static final String CRON_DEFAULT_SEC = "*+*+*+*+*+?";
 
 	@Bean
 	@Override
@@ -30,19 +31,18 @@ public class RouteConfig extends SingleRouteCamelConfiguration {
 		return new RouteBuilder() {
 			@Override
 			public void configure() throws Exception {
-				/** Camel log **/
+				/** Route HelloWorld - Log **/
 				/* Expression cron de déclenchement */
 				from("quartz2://" + JOB_TEST_LOG + "?cron=" + CRON_DEFAULT_SEC)
-						/* Prise en compte de la plage horaire */
+						/* Prise en compte d'une plage horaire pour le démarrage et l'arrêt automatique de la route */
 						.routePolicy(plageHoraire())
-						/* AutoStartUp et Id de la route */
-						.autoStartup(isAutoStartedRoute(plageHoraire())).routeId(JOB_TEST_LOG)
-						// .setBody(simple("Logging..."))
-						// .to("log:fr.cameldemo.RouteConfig?level=INFO&groupingSize=5");
-						.log(LoggingLevel.INFO, "Logging...");
-
-				/* Process */
-				// TODO
+						/* AutoStartUp : démarrage automatique de la route au lancement de l'appli en fonction de la plage horaire */
+						.autoStartup(isAutoStartedRoute(plageHoraire()))
+						/* Définition d'un id pour la route */
+						.routeId(JOB_TEST_LOG)
+						// .setBody(simple("Simple Hello..."))
+						// .to("log:fr.cameldemo.RouteConfig?level=INFO&groupSize=5");
+						.log(LoggingLevel.INFO, "Hello World !");
 			}
 		};
 	}
