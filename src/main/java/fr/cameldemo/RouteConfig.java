@@ -20,7 +20,7 @@ public class RouteConfig extends SingleRouteCamelConfiguration {
 	static final Logger LOG = LoggerFactory.getLogger(RouteConfig.class);
 
 	/* Jobs Name */
-	public static final String JOB_TEST_LOG = "TEST_LOGS";
+	public static final String JOB_HELLO_WORLD = "HELLO_WORLD";
 
 	/* Crons */
 	public static final String CRON_DEFAULT_MIN = "0+*+*+*+*+?";
@@ -37,13 +37,13 @@ public class RouteConfig extends SingleRouteCamelConfiguration {
 			public void configure() throws Exception {
 				/** Route HelloWorld - Log **/
 				/* Expression cron de déclenchement */
-				from("quartz2://" + JOB_TEST_LOG + "?cron=" + CRON_DEFAULT_SEC)
+				from("quartz2://" + JOB_HELLO_WORLD + "?cron=" + CRON_DEFAULT_SEC)
 						/* Prise en compte d'une plage horaire pour le démarrage et l'arrêt automatique de la route */
 						.routePolicy(plageHoraire())
 						/* AutoStartUp : démarrage automatique de la route au lancement de l'appli en fonction de la plage horaire */
 						.autoStartup(isAutoStartedRoute(plageHoraire()))
 						/* Définition d'un id pour la route */
-						.routeId(JOB_TEST_LOG)
+						.routeId(JOB_HELLO_WORLD)
 						// .setBody(simple("Simple Hello..."))
 						// .to("log:fr.cameldemo.RouteConfig?level=INFO&groupSize=5");
 						.log(LoggingLevel.INFO, "Hello World !");
