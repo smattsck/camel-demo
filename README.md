@@ -8,9 +8,9 @@ ou en encore le routage de messages/données entre applications.
 
 [Liste de l'ensemble des EIP](http://www.enterpriseintegrationpatterns.com/patterns/messaging/toc.html) en référence au livre *"Enterprise Integration Patterns : Designing, Building, and Deploying Messaging Solutions"* by Gregor Hohpe, Bobby Woolf.
 
-![Possibilités des EIP](/docs/eip-patterns.png)
+*Possibilités des EIP - Exemples de flux : *
 
-*Possibilités des EIP - Exemples de flux*
+![Possibilités des EIP](/docs/eip-patterns.png)
 
 [Liste des EIP implémentés par Camel.](http://camel.apache.org/enterprise-integration-patterns.html)
 
@@ -161,4 +161,14 @@ public class RouteConfig extends SingleRouteCamelConfiguration {
 		return isAutoStartedRoute;
 	}
 }
+```
+
+Cette classe servira de base aux exercices.
+
+##Exercice 1 : Hello World
+
+### Cloner le repository
+
+```ssh
+git clone git@github.com:smattsck/camel-demo.git
 ```
