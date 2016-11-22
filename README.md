@@ -172,3 +172,59 @@ Cette classe servira de base aux exercices.
 ```ssh
 git clone git@github.com:smattsck/camel-demo.git
 ```
+
+### Démarrer l'application
+
+```ssh
+mvn spring-boot:run
+```
+
+La route HELLO_WORLD doit alors créer un log INFO toutes les secondes.
+
+### Utilisation du composant LOG
+
+Détail du composant : [http://camel.apache.org/log.html](http://camel.apache.org/log.html)
+
+1. Décommenter les 2 lignes :
+
+	* ```java
+// .setBody(simple("Simple Hello..."))
+// .to("log:fr.cameldemo.RouteConfig?level=INFO&groupSize=5");
+```
+		* On remarquera ici l'utilisation de la syntaxe *simple*, permettant d'intéragir avec l'exchange Camel directement au niveau de la route
+			* [Pour plus d'infos sur la syntaxe Simple](http://camel.apache.org/simple.html)
+	* Et tester le fonctionnement, l'application groupe alors les logs par paquet de 5 avec l'option *groupSize*.
+
+2. Remplacer le groupement par paquet par un groupement avec intervalle de temps.
+
+### Utilisation d'un processor
+
+3. Utiliser un processor Java à la place du composant log pour logger l'Exchange Camel
+
+De manière générale :
+> Préférer l'utilisation du DSL Java pour décrire les routes et l'utilisation de processors pour les traitements
+
+> Eviter au maximum l'utilisation des expressions Simple ou appel via chaine de caractères
+
+> Cela peut vite compléxifier la lecture des routes et la maintenabilité du code
+
+
+##Exercice 2 : FTP
+
+### Déplacement d'un fichier
+
+1. A l'aide du [composant FILE](http://camel.apache.org/file2.html), déplacer le fichier `/src/files/Ex2.txt` vers le répertoire d'historique `/history`
+
+> Astuce : Utile pour les tests, l'option `noop=true` ne déplacera et ne supprimera pas le fichier
+
+### Utilisation du composant Direct
+
+2. Il peut être parfois utile de diviser la route pour moduler les traitements, à l'aide du [composant Direct](https://camel.apache.org/direct.html) diviser la route en deux
+
+3. 
+
+##Exercice 3 : CSV
+
+##Exercice 4 : Rest
+
+##Exercice 5 : Exception Handler
