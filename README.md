@@ -214,15 +214,19 @@ Vous pouvez vous servir du processor `fr/cameldemo/processors/Ex1Processor.java`
 
 ### Déplacement d'un fichier
 
-a. A l'aide du [composant FILE](http://camel.apache.org/file2.html), déplacer le fichier `/src/files/Ex2.txt` vers le répertoire d'historique `/history`
+a. A l'aide du [composant File](http://camel.apache.org/file2.html), créer une route permettant de déplacer le fichier `ex2-1.txt` sous `/src/files/ex2/1/` vers le répertoire d'historique `/src/history`
 
-> Astuce : Utile pour les tests, l'option `noop=true` ne déplacera et ne supprimera pas le fichier
+> Astuce : Utile pour les tests, l'option `noop=true` ne déplacera et ne supprimera pas les fichiers
+
+b. Ajouter une instruction permettant de renommer le fichier via le header `CamelFileName`. A l'aide du [File Expression Language](http://camel.apache.org/file-language.html) ajouter la date et l'heure de passage dans nom du fichier sous cette forme `nom-yyyyMMddHHmmss.extension`
 
 ### Utilisation du composant Direct
 
-b. Il peut être parfois utile de diviser la route pour moduler les traitements, à l'aide du [composant Direct](https://camel.apache.org/direct.html) diviser la route en deux
+b. Il peut être parfois utile de diviser la route pour moduler les traitements, à l'aide du [composant Direct](https://camel.apache.org/direct.html) diviser la route en deux (Récupération/Renommage+Ecriture)
 
-c. 
+c. Ajouter une nouvelle route pour déplacer le fichier `ex2-2.txt` sous `/src/files/ex2/2/` vers le répertoire d'historique `/src/history`
+
+d. Modifier l'Endpoint de destination pour générer dynamiquement une arborescence d'historique sous cette forme : année/mois/jours/heure : `yyyy/yyyy-MM/yyyy-MM-dd/yyyy-MM-dd_HH/`
 
 ##Exercice 3 : CSV
 
