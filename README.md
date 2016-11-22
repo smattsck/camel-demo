@@ -185,13 +185,12 @@ La route HELLO_WORLD doit alors créer un log INFO toutes les secondes.
 
 Détail du composant : [http://camel.apache.org/log.html](http://camel.apache.org/log.html)
 
-a. Commenter la ligne `.log(LoggingLevel.INFO, "Hello World !");` puis :
+a. Commenter la ligne `.log(LoggingLevel.INFO, "Hello World !");` 
 
-	* Décommenter les 2 lignes : 
-	`//.setBody(simple("Simple Hello...")).to("log:fr.cameldemo.RouteConfig?level=INFO&groupSize=5");`
-		* On remarquera ici l'utilisation de l'expression *simple*, permettant d'intéragir avec l'exchange Camel directement au niveau de la route
-			* [Pour plus d'infos sur la syntaxe Simple](http://camel.apache.org/simple.html)
-	* Et tester le fonctionnement, l'application groupe alors les logs par paquet de 5 avec l'option *groupSize*.
+* Puis décommenter les 2 lignes : `//.setBody(simple("Simple Hello...")).to("log:fr.cameldemo.RouteConfig?level=INFO&groupSize=5");`
+	* On remarquera ici l'utilisation de l'expression *simple*, permettant d'intéragir avec l'exchange Camel directement au niveau de la route
+		* [Pour plus d'infos sur la syntaxe Simple](http://camel.apache.org/simple.html)
+* Et tester le fonctionnement, l'application groupe alors les logs par paquet de 5 avec l'option *groupSize*.
 
 b. Remplacer le groupement par paquet par un groupement avec intervalle de temps, toutes les 10s par exemple.
 
