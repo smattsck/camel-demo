@@ -41,7 +41,7 @@ public class RouteConfig extends SingleRouteCamelConfiguration {
 						/* Prise en compte d'une plage horaire pour le démarrage et l'arrêt automatique de la route */
 						.routePolicy(plageHoraire())
 						/* AutoStartUp : démarrage automatique de la route au lancement de l'appli en fonction de la plage horaire */
-						.autoStartup(isAutoStartedRoute(plageHoraire()))
+						.autoStartup(isCronNextExecutionTimeIn(plageHoraire()))
 						/* Définition d'un id pour la route */
 						.routeId(JOB_HELLO_WORLD)
 						// .setBody(simple("Simple Hello..."))
@@ -63,10 +63,10 @@ public class RouteConfig extends SingleRouteCamelConfiguration {
 		return cronGeneral;
 	}
 
-	/** Permet de vérifier si on est dans la plage horaire de la policy en paramètre
+	/** Permet de vérifier si la prochaine exécution du cron est comprise dans la plage horaire de la policy en paramètre
 	 *
 	 * @return true si dans la plage horaire */
-	public static boolean isAutoStartedRoute(final CronScheduledRoutePolicy csrp) {
+	public static boolean isCronNextExecutionTimeIn(final CronScheduledRoutePolicy csrp) {
 		CronTrigger ctstart = new CronTrigger(csrp.getRouteStartTime(), TimeZone.getDefault());
 		CronTrigger ctstop = new CronTrigger(csrp.getRouteStopTime(), TimeZone.getDefault());
 		SimpleTriggerContext context = new SimpleTriggerContext();

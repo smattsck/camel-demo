@@ -26,7 +26,7 @@ Apache Camel fourni de nombreux composants pour la réalisation de ces EIP, exem
 	* Fichiers plats : CSV, ...
 * Support de protocoles : camel-http, -ftp (sftp), -scp, ...
 * Routage de messages : activemq-camel, camel-jms, ...
-* Web Services : spring-ws, CXF, Rest, ...
+* Web Services : spring-ws, CXF, [Rest](http://camel.apache.org/rest-dsl.html), ...
 
 [Liste complète des composants Camel.](https://camel.apache.org/components.html)
 
@@ -48,7 +48,7 @@ Toutes les déclarations doivent se faire au sein d'un CamelContext.
 
 ## Initialiation du projet - pom.xml
 
-Nous utiliserons SpringBoot comme base d'application.
+SpringBoot est utilisé comme base d'application.
 
 Dépendances SpringBoot :
 ```xml
@@ -97,7 +97,7 @@ Et pour l'utilisation d'expressions Cron, on ajoute camel-quartz :
 </dependency>
 ```
 
-Côté Java, les routes Camel seront définies dans la classe RouteConfig :
+Côté Java, les routes Camel sont définies dans la classe RouteConfig :
 
 ```java
 /** Configuration d'un CamelContext */
@@ -188,7 +188,8 @@ Détail du composant : [http://camel.apache.org/log.html](http://camel.apache.or
 a. Commenter la ligne `.log(LoggingLevel.INFO, "Hello World !");` 
 
 * Puis décommenter les 2 lignes : `//.setBody(simple("Simple Hello..."))//.to("log:fr.cameldemo.RouteConfig?level=INFO&groupSize=5");`
-	* On remarquera ici l'utilisation de l'expression *simple*, permettant d'intéragir avec l'exchange Camel directement au niveau de la route
+	* On remarquera ici l'utilisation de l'expression *simple*, permettant d'intéragir avec l'*exchange* Camel directement au niveau de la route
+		* Ici, le *body* de l'*exchange* est rempli avec une chaine de caractères
 		* [Pour plus d'infos sur la syntaxe Simple](http://camel.apache.org/simple.html)
 * Et tester le fonctionnement, l'application groupe alors les logs par paquet de 5 avec l'option *groupSize*.
 
@@ -196,19 +197,11 @@ b. Remplacer le groupement par paquet par un groupement avec intervalle de temps
 
 ### Utilisation d'un processor
 
-c. Utiliser un processor Java à la place du composant log pour logger l'Exchange Camel.
+Un *processor* est une classe Java implémentant l'interface *Processor* de Camel permettant ainsi d'être utilisé dans les routes via la méthode `.bean(Processor.class)`.
 
-Un processor est une classe Java implémentant l'interface Processor de Camel permettant ainsi d'être utilisé dans les routes via l'instruction `.bean(Processor.class)`.
+c. Utiliser un *processor* Java à la place du composant *log* pour logger l'*exchange* Camel.
 
 Vous pouvez vous servir du processor `fr/cameldemo/processors/Ex1Processor.java`.
-
-> De manière générale :
-
-> Préférer l'utilisation du DSL Java pour décrire les routes et l'utilisation de processors pour les traitements
-
-> Eviter au maximum l'utilisation des expressions Simple ou appel via chaine de caractères
-
-> Cela peut vite compléxifier la lecture des routes et la maintenabilité du code
 
 ##Exercice 2 : Fichier
 
@@ -218,7 +211,7 @@ a. A l'aide du [composant File](http://camel.apache.org/file2.html), créer une 
 
 > Utile : Pour les tests, l'option `noop=true` ne déplacera et ne supprimera pas les fichiers
 
-b. Ajouter une instruction pour de renommer le fichier via le header `CamelFileName`. A l'aide du [File Expression Language](http://camel.apache.org/file-language.html) ajouter la date et l'heure de passage dans nom du fichier sous cette forme `nom-yyyyMMddHHmmss.extension`
+b. Ajouter une instruction pour renommer le fichier via le header `CamelFileName`. A l'aide du [File Expression Language](http://camel.apache.org/file-language.html) ajouter la date et l'heure de passage dans le nom du fichier sous cette forme `nom-yyyyMMddHHmmss.extension`
 
 ### Utilisation du composant Direct
 
@@ -238,7 +231,7 @@ b. Diviser la route en deux (Récupération/Renommage+Ecriture)
 
 c. Ajouter une nouvelle route pour déplacer le fichier `ex2-2.txt` sous `/src/files/ex2/2/` vers le répertoire d'historique `/src/history`
 
-d. Modifier l'endpoint de destination pour générer dynamiquement une arborescence d'historique sous cette forme : année/mois/jours/heure : `yyyy/yyyy-MM/yyyy-MM-dd/yyyy-MM-dd_HH/`
+d. Modifier l'endpoint d'écriture dans le répertoire d'historique pour générer dynamiquement une arborescence sous cette forme : année/mois/jours/heure : `yyyy/yyyy-MM/yyyy-MM-dd/yyyy-MM-dd_HH/`
 
 ##Exercice 3 : CSV
 
@@ -256,13 +249,23 @@ public Class Order {
 }
 ```
 
-Les instructions à utiliser dans une route :
+Les méthodes à utiliser dans une route :
 * Pour sérialiser : `.marshal(new BindyCsvDataFormat(X.class))`
 * Pour désérialiser : `.unmarshal(new BindyCsvDataFormat(X.class))`
 
+Ajouter dans le pom.xml la dépendance suivante :
+
+```java
+<dependency>
+	<groupId>org.apache.camel</groupId>
+	<artifactId>camel-bindy</artifactId>
+	<version>${camel.version}</version>
+</dependency>
+```
+
 a. Annoter l'objet `/entities/Ex3.java` puis créer une route pour désérialiser le fichier `ex3.csv` sous `/src/files/ex3/` et logger chaque ligne dans un processor
 
-> Le résultat de la conversion étant une liste, il est possible de la splitter pour réaliser un foreach directement dans la route : `.split(body())`
+> Le résultat de la conversion étant une liste, il est possible de la *splitter* pour réaliser un *forEach* directement dans la route : `.split(body())`
 
 b. Dans le processor modifier les données puis re-générer le fichier csv dans le répertoire d'historique `/src/history`
 
@@ -288,9 +291,60 @@ public static <T> List<T> convertCsvToFile(final InputStream is, final Class<T> 
 }
 ```
 
-##Exercice 4 : Rest
+##Tuto 4 : ErrorHandler
 
-##Exercice 5 : Exception Handler
+Pour gérer les exceptions qui surviennent et pour éviter les relances à l'infini, il est important de définir un [ErrorHandler](http://camel.apache.org/error-handler.html).
 
-Conclusion
+Celui-ci permet notamment :
 
+* de re-router les exchanges en exceptions, 
+* d'afficher le message d'erreur 
+* et de définir un nombre d'essai maximum.
+
+```java
+errorHandler(deadLetterChannel("seda:errors").log(RouteConfig.class).retryAttemptedLogLevel(LoggingLevel.INFO).maximumRedeliveries(3));
+```
+
+Ci-dessus, l'*errorHandler* défini est un *DeadLetterChannel* permmettant de définir un nombre d'essai avant de transférer l'*exchange* vers un autre *endpoint*. Ici 3 tentatives `.maximumRedeliveries(3)` puis envoi vers `seda:errors`.
+
+Il est ici défini globalement pour toutes les routes du CamelContext. Au besoin, un *errorHandler* peut être défini au niveau d'une route.
+
+> Utile : On remarquera l'utilisation du [composant Seda](https://camel.apache.org/seda.html) qui est l'équivalent du [composant Direct](https://camel.apache.org/direct.html) mais avec un fonctionnement asynchrone.
+
+Il est également possible de définir des règles par [type d'exception](http://camel.apache.org/exception-clause.html) avec la méthode `onException(IOException.class)....to(...`. Idem globalement ou par route.
+
+##Tuto 5 : FTP
+
+Le [composant FTP](http://camel.apache.org/ftp2.html) est trés utile et simple d'utilisation.
+
+Il est nécessaire d'ajouter la dépendance suivante :
+
+```java
+<dependency>
+	<groupId>org.apache.camel</groupId>
+	<artifactId>camel-ftp</artifactId>
+	<version>${camel.version}</version>
+</dependency>
+```
+
+Voici un exemple de route :
+```java
+from("ftp://server.fr/fichiersARecuperer/?username=login&password=secret&consumer.delay=60000")
+.to("file:repertoireApplication");
+```
+
+Toutes les 60 secondes cette route récupérera les fichiers présents dans le répertoire en paramètre.
+
+##Tuto 6 : ActiveMQ
+
+##Conclusion
+
+Sont présentés ici les principaux composants que j'ai pu utiliser, offrant un gain de temps et une facilité de mise en place.
+
+Cela ne représente qu'une mince partie du potentiel de Camel, qui est plus particulièrement utile dans les échanges entre applications (JMS, ActiveMQ, Docker,...).
+
+De manière générale :
+
+* Préférer l'utilisation du DSL Java pour décrire les routes et l'utilisation de processors pour les traitements
+* Eviter au maximum l'utilisation des expressions Simple ou appel via chaine de caractères
+	* Cela peut vite compléxifier le code et sa maintenabilité
