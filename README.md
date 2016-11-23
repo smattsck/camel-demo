@@ -187,7 +187,7 @@ Détail du composant : [http://camel.apache.org/log.html](http://camel.apache.or
 
 a. Commenter la ligne `.log(LoggingLevel.INFO, "Hello World !");` 
 
-* Puis décommenter les 2 lignes : `//.setBody(simple("Simple Hello...")).to("log:fr.cameldemo.RouteConfig?level=INFO&groupSize=5");`
+* Puis décommenter les 2 lignes : `//.setBody(simple("Simple Hello..."))//.to("log:fr.cameldemo.RouteConfig?level=INFO&groupSize=5");`
 	* On remarquera ici l'utilisation de l'expression *simple*, permettant d'intéragir avec l'exchange Camel directement au niveau de la route
 		* [Pour plus d'infos sur la syntaxe Simple](http://camel.apache.org/simple.html)
 * Et tester le fonctionnement, l'application groupe alors les logs par paquet de 5 avec l'option *groupSize*.
@@ -210,26 +210,87 @@ Vous pouvez vous servir du processor `fr/cameldemo/processors/Ex1Processor.java`
 
 > Cela peut vite compléxifier la lecture des routes et la maintenabilité du code
 
-##Exercice 2 : FTP
+##Exercice 2 : Fichier
 
 ### Déplacement d'un fichier
 
 a. A l'aide du [composant File](http://camel.apache.org/file2.html), créer une route permettant de déplacer le fichier `ex2-1.txt` sous `/src/files/ex2/1/` vers le répertoire d'historique `/src/history`
 
-> Astuce : Utile pour les tests, l'option `noop=true` ne déplacera et ne supprimera pas les fichiers
+> Utile : Pour les tests, l'option `noop=true` ne déplacera et ne supprimera pas les fichiers
 
-b. Ajouter une instruction permettant de renommer le fichier via le header `CamelFileName`. A l'aide du [File Expression Language](http://camel.apache.org/file-language.html) ajouter la date et l'heure de passage dans nom du fichier sous cette forme `nom-yyyyMMddHHmmss.extension`
+b. Ajouter une instruction pour de renommer le fichier via le header `CamelFileName`. A l'aide du [File Expression Language](http://camel.apache.org/file-language.html) ajouter la date et l'heure de passage dans nom du fichier sous cette forme `nom-yyyyMMddHHmmss.extension`
 
 ### Utilisation du composant Direct
 
-b. Il peut être parfois utile de diviser la route pour moduler les traitements, à l'aide du [composant Direct](https://camel.apache.org/direct.html) diviser la route en deux (Récupération/Renommage+Ecriture)
+Le [composant Direct](https://camel.apache.org/direct.html) permet diviser les routes au sein d'un même CamelContext pour ainsi moduler et réutiliser des traitements.
+
+Exemple :
+
+```java
+from("file:in")
+	.to("direct:processFile");
+
+from("direct:processFile")
+	.to("file:out");
+```
+
+b. Diviser la route en deux (Récupération/Renommage+Ecriture)
 
 c. Ajouter une nouvelle route pour déplacer le fichier `ex2-2.txt` sous `/src/files/ex2/2/` vers le répertoire d'historique `/src/history`
 
-d. Modifier l'Endpoint de destination pour générer dynamiquement une arborescence d'historique sous cette forme : année/mois/jours/heure : `yyyy/yyyy-MM/yyyy-MM-dd/yyyy-MM-dd_HH/`
+d. Modifier l'endpoint de destination pour générer dynamiquement une arborescence d'historique sous cette forme : année/mois/jours/heure : `yyyy/yyyy-MM/yyyy-MM-dd/yyyy-MM-dd_HH/`
 
 ##Exercice 3 : CSV
+
+Le [composant Bindy](http://camel.apache.org/bindy.html) permet de convertir des fichiers CSV en objet Java, via des annotations pour définir le séparateur utilisé ou encore les positions des données dans le fichier.
+
+Exemple :
+
+```java
+@CsvRecord(separator = ";", skipFirstLine = true)
+public Class Order {
+	...
+	@DataField(pos = 1)
+	private int orderNr;
+	...
+}
+```
+
+Les instructions à utiliser dans une route :
+* Pour sérialiser : `.marshal(new BindyCsvDataFormat(X.class))`
+* Pour désérialiser : `.unmarshal(new BindyCsvDataFormat(X.class))`
+
+a. Annoter l'objet `/entities/Ex3.java` puis créer une route pour désérialiser le fichier `ex3.csv` sous `/src/files/ex3/` et logger chaque ligne dans un processor
+
+> Le résultat de la conversion étant une liste, il est possible de la splitter pour réaliser un foreach directement dans la route : `.split(body())`
+
+b. Dans le processor modifier les données puis re-générer le fichier csv dans le répertoire d'historique `/src/history`
+
+> Utile : Il est possible d'utiliser CamelBindy en java uniquement :
+
+```java
+public static <T> List<T> convertCsvToFile(final InputStream is, final Class<T> cl) throws Exception {
+	BindyCsvDataFormat bindy = new BindyCsvDataFormat(cl);
+	if (is instanceof InputStream) {
+		CamelContext ctx = new DefaultCamelContext();
+		Exchange ex = new DefaultExchange(ctx);
+		Object o = bindy.unmarshal(ex, is);
+		if (o instanceof List<?>) {
+			return (List<T>) o;
+		}
+		if (o.getClass() == cl) {
+			List<T> l = new ArrayList<>();
+			l.add((T) o);
+			return l;
+		}
+	}
+	return null;
+}
+```
 
 ##Exercice 4 : Rest
 
 ##Exercice 5 : Exception Handler
+
+Conclusion
+
