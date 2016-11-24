@@ -193,7 +193,7 @@ a. Commenter la ligne `.log(LoggingLevel.INFO, "Hello World !");`
 	* On remarquera ici l'utilisation de l'expression *simple*, permettant d'intéragir avec l'*exchange* Camel directement au niveau de la route
 		* Ici, le *body* de l'*exchange* est rempli avec une chaine de caractères
 		* [Pour plus d'infos sur la syntaxe Simple](http://camel.apache.org/simple.html)
-* Et tester le fonctionnement, l'application groupe alors les logs par paquet de 5 avec l'option *groupSize*.
+* Tester le fonctionnement, l'application groupe alors les logs par paquet de 5 avec l'option *groupSize*.
 
 b. Remplacer le groupement par paquet par un groupement avec intervalle de temps, toutes les 10s par exemple.
 
@@ -224,7 +224,7 @@ a. Créer une route permettant de déplacer le fichier `ex2-1.txt` sous `/src/fi
 
 > Utile : Pour les tests, l'option `?noop=true` ne déplacera et ne supprimera pas les fichiers
 
-b. Ajouter une instruction pour renommer le fichier via le header `CamelFileName`. A l'aide du [File Expression Language](http://camel.apache.org/file-language.html) ajouter la date et l'heure de passage dans le nom du fichier sous cette forme `nom-yyyyMMddHHmmss.extension`
+b. Ajouter une instruction pour renommer le fichier via le *header* `CamelFileName`. A l'aide du [File Expression Language](http://camel.apache.org/file-language.html) ajouter la date et l'heure de passage dans le nom du fichier sous cette forme `nom-yyyyMMddHHmmss.extension`
 
 ### Utilisation du composant Direct
 
@@ -263,8 +263,8 @@ public Class Order {
 ```
 
 Les méthodes à utiliser dans une route :
-* Pour sérialiser : `.marshal(new BindyCsvDataFormat(X.class))`
-* Pour désérialiser : `.unmarshal(new BindyCsvDataFormat(X.class))`
+* Pour sérialiser : `.marshal(new BindyCsvDataFormat(Order.class))`
+* Pour désérialiser : `.unmarshal(new BindyCsvDataFormat(Order.class))`
 
 Ajouter dans le pom.xml la dépendance suivante :
 
@@ -276,9 +276,9 @@ Ajouter dans le pom.xml la dépendance suivante :
 </dependency>
 ```
 
-a. Annoter l'objet `/entities/Ex3.java` puis créer une route pour désérialiser le fichier `ex3.csv` sous `/src/files/ex3/` et logger chaque ligne dans un processor
+a. Annoter l'objet `fr/cameldemo/entities/Ex3.java` puis créer une route pour désérialiser le fichier `ex3.csv` sous `/src/files/ex3/` et logger chaque ligne dans un processor
 
-> Le résultat de la conversion étant une liste, il est possible de la *splitter* pour réaliser un *forEach* directement dans la route : `.split(body())`
+> Utile : Le résultat de la conversion étant une liste, il est possible de la *splitter* pour réaliser un *forEach* directement dans la route : `.split(body())`
 
 b. Dans le processor modifier les données puis re-générer le fichier csv dans le répertoire d'historique `/src/history`
 
