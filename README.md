@@ -339,7 +339,7 @@ Toutes les 60 secondes cette route récupérera les fichiers présents dans le r
 
 ##Conclusion
 
-Sont présentés ici les principaux composants que j'ai pu utiliser, offrant un gain de temps et une facilité de mise en place.
+Sont présentés ici les principaux composants que j'ai pu utiliser, offrants un gain de temps et une facilité de mise en place.
 
 Cela ne représente qu'une mince partie du potentiel de Camel, qui est plus particulièrement utile dans les échanges entre applications (JMS, ActiveMQ, Docker,...).
 
