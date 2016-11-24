@@ -30,7 +30,7 @@ Apache Camel fourni de nombreux composants pour la réalisation de ces EIP, exem
 
 [Liste complète des composants Camel.](https://camel.apache.org/components.html)
 
-Pour information, la documentation sur le site web est très complète et il y a une bonne communauté. Il existe également un livre écrit par les développeurs de Camel *"Camel In Action, Second Edition"* by Claus Ibsen and Jonathan Anstey.
+La documentation sur le site web est très complète et il y a une bonne communauté. Il existe également un livre écrit par les développeurs de Camel *"Camel In Action, Second Edition"* by Claus Ibsen and Jonathan Anstey.
 
 ### Eléments de base Camel - Route, Processor et Endpoint
 
@@ -185,7 +185,7 @@ La route HELLO_WORLD doit alors créer un log INFO toutes les secondes.
 
 ### Utilisation du composant LOG
 
-Détail du composant : [http://camel.apache.org/log.html](http://camel.apache.org/log.html)
+Le [composant Log](http://camel.apache.org/log.html]) offre plus de possibilités que la fonction log de base.
 
 a. Commenter la ligne `.log(LoggingLevel.INFO, "Hello World !");` 
 
@@ -209,9 +209,20 @@ Vous pouvez vous servir du processor `fr/cameldemo/processors/Ex1Processor.java`
 
 ### Déplacement d'un fichier
 
-a. A l'aide du [composant File](http://camel.apache.org/file2.html), créer une route permettant de déplacer le fichier `ex2-1.txt` sous `/src/files/ex2/1/` vers le répertoire d'historique `/src/history`
+Le [composant File](http://camel.apache.org/file2.html) permet d'intéragir avec les fichiers.
 
-> Utile : Pour les tests, l'option `noop=true` ne déplacera et ne supprimera pas les fichiers
+Exemple :
+
+```java
+from("file:in")
+	.to("file:out");
+```
+
+Cette route tous les fichiers du répertoire *in* pour les envoyer vers le répertoire *out*.
+
+a. Créer une route permettant de déplacer le fichier `ex2-1.txt` sous `/src/files/ex2/1/` vers le répertoire d'historique `/src/history`
+
+> Utile : Pour les tests, l'option `?noop=true` ne déplacera et ne supprimera pas les fichiers
 
 b. Ajouter une instruction pour renommer le fichier via le header `CamelFileName`. A l'aide du [File Expression Language](http://camel.apache.org/file-language.html) ajouter la date et l'heure de passage dans le nom du fichier sous cette forme `nom-yyyyMMddHHmmss.extension`
 
@@ -337,7 +348,7 @@ from("ftp://server.fr/fichiersARecuperer/?username=login&password=secret&consume
 
 Toutes les 60 secondes cette route récupérera les fichiers présents dans le répertoire en paramètre.
 
-> Utile : Il est possible de filtrer les fichiers à récupérer avec l'option `filter=` pointant vers une classe implèmentant l'interface `GenericFileFilter` -> [Plus d'infos](http://camel.apache.org/ftp2.html#FTP2-Filterusingorg.apache.camel.component.file.GenericFileFilter)
+> Utile : Il est possible de filtrer les fichiers à récupérer avec l'option `?filter=` pointant vers une classe implèmentant l'interface `GenericFileFilter` -> [Plus d'infos](http://camel.apache.org/ftp2.html#FTP2-Filterusingorg.apache.camel.component.file.GenericFileFilter)
 
 ##ActiveMQ
 
