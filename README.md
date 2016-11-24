@@ -128,11 +128,14 @@ public class RouteConfig extends SingleRouteCamelConfiguration {
 						/* Prise en compte d'une plage horaire pour le démarrage et l'arrêt automatique de la route */
 						.routePolicy(plageHoraire())
 						/* AutoStartUp : démarrage automatique de la route au lancement de l'appli en fonction de la plage horaire */
-						.autoStartup(isAutoStartedRoute(plageHoraire()))
+						.autoStartup(isCronNextExecutionTimeIn(plageHoraire()))
 						/* Définition d'un id pour la route */
 						.routeId(JOB_HELLO_WORLD)
+						/* Ajout d'une donnée dans l'exchange en cours */
 						// .setBody(simple("Simple Hello..."))
+						/* Utilisation du composant Log */
 						// .to("log:fr.cameldemo.RouteConfig?level=INFO&groupSize=5");
+						/* Log */
 						.log(LoggingLevel.INFO, "Hello World !");
 			}
 		};
@@ -150,15 +153,14 @@ public class RouteConfig extends SingleRouteCamelConfiguration {
 		return cronGeneral;
 	}
 
-	/** Permet de vérifier si on est dans la plage horaire de la policy en paramètre
+	/** Permet de vérifier si la prochaine exécution du cron est comprise dans la plage horaire de la policy en paramètre
 	 *
 	 * @return true si dans la plage horaire */
-	public static boolean isAutoStartedRoute(final CronScheduledRoutePolicy csrp) {
+	public static boolean isCronNextExecutionTimeIn(final CronScheduledRoutePolicy csrp) {
 		CronTrigger ctstart = new CronTrigger(csrp.getRouteStartTime(), TimeZone.getDefault());
 		CronTrigger ctstop = new CronTrigger(csrp.getRouteStopTime(), TimeZone.getDefault());
 		SimpleTriggerContext context = new SimpleTriggerContext();
-		boolean isAutoStartedRoute = ctstart.nextExecutionTime(context).compareTo(ctstop.nextExecutionTime(context)) > 0;
-		return isAutoStartedRoute;
+		return ctstart.nextExecutionTime(context).compareTo(ctstop.nextExecutionTime(context)) > 0;
 	}
 }
 ```
@@ -335,16 +337,35 @@ from("ftp://server.fr/fichiersARecuperer/?username=login&password=secret&consume
 
 Toutes les 60 secondes cette route récupérera les fichiers présents dans le répertoire en paramètre.
 
-##Tuto 6 : ActiveMQ
+> Utile : Il est possible de filtrer les fichiers à récupérer avec l'option `filter=` pointant vers une classe implèmentant l'interface `GenericFileFilter` -> [Plus d'infos](http://camel.apache.org/ftp2.html#FTP2-Filterusingorg.apache.camel.component.file.GenericFileFilter)
+
+##ActiveMQ
+
+Camel dispose également un [composant ActiveMQ](http://camel.apache.org/activemq.html) permettant de communiquer avec un serveur ActiveMQ des messages sur des *Queue* et *Topic* JMS.
+
+ActiveMQ sera utile pour des applications :
+* Qui ne doivent perdre aucun message, aussi bien pendant le fonctionnement qu'à l'arrêt
+* Avec un volume de messages important
+	* Il est possible d'optimiser la récupération des messages de plusieurs façons, notamment en parallèlisant les traitements
+
+> Utile : Il est possible d'embarquer un serveur ActiveMQ dans l'application -> [Plus d'info](http://activemq.apache.org/how-do-i-embed-a-broker-inside-a-connection.html)
 
 ##Pour conclure
 
-Sont présentés ici les principaux composants que j'ai pu utiliser, offrants un gain de temps et une facilité de mise en place.
+Cette présentation pose les bases de l'utilisation de Camel et donne un aperçu des principaux composants, offrants un gain de temps et une facilité de mise en place.
 
-Cela ne représente qu'une mince partie du potentiel de Camel, qui est plus particulièrement utile dans les échanges entre applications (JMS, ActiveMQ, Docker,...).
+Cela ne représente qu'une mince partie du potentiel de Camel, qui est plus particulièrement utile dans les échanges entre applications ([JMS](http://camel.apache.org/jms.html), [ActiveMQ](http://camel.apache.org/activemq.html), [VM](http://camel.apache.org/vm.html), [Docker](http://camel.apache.org/docker.html),...).
 
 De manière générale :
 
-* Préférer l'utilisation du DSL Java pour décrire les routes et l'utilisation de processors pour les traitements
-* Eviter au maximum l'utilisation des expressions Simple ou appel via chaine de caractères
+* Préférer l'utilisation du DSL Java pour décrire les *routes* et l'utilisation de *processors* pour les traitements
+* Eviter au maximum l'utilisation des expressions *Simple* ou autre appel via chaine de caractères
 	* Cela peut vite compléxifier le code et sa maintenabilité
+* Dans le cas une application contenant beaucoup de routes et sous-routes :
+	* Eviter l'ajout de données dans les *headers*
+	* Préférer l'utilisation d'un objet unique contenant toutes vos variables
+* Son utilisation dépendra du projet
+	* Pour réaliser des taches simples, Camel n'est pas forcèment nécessaire
+	* Exemples :
+		* Alternative à la gestion des fichiers : [Java 8 Files](https://docs.oracle.com/javase/8/docs/api/java/nio/file/Files.html)
+		* Alternative au Cron : [Spring Cron](https://spring.io/guides/gs/scheduling-tasks/)

@@ -44,8 +44,11 @@ public class RouteConfig extends SingleRouteCamelConfiguration {
 						.autoStartup(isCronNextExecutionTimeIn(plageHoraire()))
 						/* Définition d'un id pour la route */
 						.routeId(JOB_HELLO_WORLD)
+						/* Ajout d'une donnée dans l'exchange en cours */
 						// .setBody(simple("Simple Hello..."))
+						/* Utilisation du composant Log */
 						// .to("log:fr.cameldemo.RouteConfig?level=INFO&groupSize=5");
+						/* Log */
 						.log(LoggingLevel.INFO, "Hello World !");
 			}
 		};
@@ -70,7 +73,6 @@ public class RouteConfig extends SingleRouteCamelConfiguration {
 		CronTrigger ctstart = new CronTrigger(csrp.getRouteStartTime(), TimeZone.getDefault());
 		CronTrigger ctstop = new CronTrigger(csrp.getRouteStopTime(), TimeZone.getDefault());
 		SimpleTriggerContext context = new SimpleTriggerContext();
-		boolean isAutoStartedRoute = ctstart.nextExecutionTime(context).compareTo(ctstop.nextExecutionTime(context)) > 0;
-		return isAutoStartedRoute;
+		return ctstart.nextExecutionTime(context).compareTo(ctstop.nextExecutionTime(context)) > 0;
 	}
 }
