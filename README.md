@@ -209,7 +209,7 @@ Vous pouvez vous servir du processor `fr/cameldemo/processors/Ex1Processor.java`
 
 ### Déplacement d'un fichier
 
-Le [composant File](http://camel.apache.org/file2.html) permet d'intéragir avec les fichiers.
+Le [composant File](http://camel.apache.org/file2.html) permet d'intéragir avec les fichiers : création, deplacement,...
 
 Exemple :
 
@@ -218,7 +218,7 @@ from("file:in")
 	.to("file:out");
 ```
 
-Cette route tous les fichiers du répertoire *in* pour les envoyer vers le répertoire *out*.
+Cette route déplace tous les fichiers du répertoire *in* vers le répertoire *out*.
 
 a. Créer une route permettant de déplacer le fichier `ex2-1.txt` sous `/src/files/ex2/1/` vers le répertoire d'historique `/src/history`
 
@@ -242,7 +242,7 @@ from("direct:processFile")
 
 b. Diviser la route en deux (Récupération/Renommage+Ecriture)
 
-c. Ajouter une nouvelle route pour déplacer le fichier `ex2-2.txt` sous `/src/files/ex2/2/` vers le répertoire d'historique `/src/history`
+c. Ajouter une nouvelle route pour déplacer le fichier `ex2-2.txt` sous `/src/files/ex2/2/` vers le répertoire d'historique
 
 d. Modifier l'endpoint d'écriture dans le répertoire d'historique pour générer dynamiquement une arborescence sous cette forme : année/mois/jours/heure : `yyyy/yyyy-MM/yyyy-MM-dd/yyyy-MM-dd_HH/`
 
