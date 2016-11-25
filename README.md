@@ -1,4 +1,5 @@
-# camel-demo
+# camel-demo 
+Par Matthieu Manginot
 
 ## Apache Camel
 [Apache Camel](http://camel.apache.org/) est un framework Java d'intégration qui peut être apparenté à un ESB (Enterprise Service Bus) léger,
