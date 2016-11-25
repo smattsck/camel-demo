@@ -42,7 +42,7 @@ La documentation sur le site web est très complète et il y a une bonne communa
 
 La déclaration des routes peut se faire en utilisant différent DSL (Domain Specific Language), tel que JAVA ou Spring XML. [Il est possible d'en utiliser d'autres.](http://camel.apache.org/dsl.html)
 
-Nous utiliserons JAVA pour nos déclarations.
+Nous utiliserons JAVA dans cette présentation.
 
 Toutes les déclarations doivent se faire au sein d'un CamelContext.
 
