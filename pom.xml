@@ -5,6 +5,7 @@
 	<artifactId>camel</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>camel-demo</name>
+	<packaging>war</packaging>
 
 	<properties>
 		<camel.version>2.17.3</camel.version>
@@ -54,6 +55,13 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<addResources>true</addResources>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>3.0.0</version>
+				<configuration>
+					<packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
 				</configuration>
 			</plugin>
 		</plugins>
