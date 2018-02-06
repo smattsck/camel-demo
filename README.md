@@ -168,7 +168,7 @@ public class RouteConfig extends SingleRouteCamelConfiguration {
 
 Cette classe servira de base aux exercices.
 
-##Exercice 1 : Hello World
+## Exercice 1 : Hello World
 
 ### Cloner le repository
 
@@ -206,7 +206,7 @@ c. Utiliser un *processor* Java à la place du composant *log* pour logger l'*ex
 
 Vous pouvez vous servir du processor `fr/cameldemo/processors/Ex1Processor.java`.
 
-##Exercice 2 : Fichier
+## Exercice 2 : Fichier
 
 ### Déplacement d'un fichier
 
@@ -247,7 +247,7 @@ c. Ajouter une nouvelle route pour déplacer le fichier `ex2-2.txt` sous `/src/f
 
 d. Modifier l'endpoint d'écriture dans le répertoire d'historique pour générer dynamiquement une arborescence sous cette forme : année/mois/jours/heure : `yyyy/yyyy-MM/yyyy-MM-dd/yyyy-MM-dd_HH/`
 
-##Exercice 3 : CSV
+## Exercice 3 : CSV
 
 Le [composant Bindy](http://camel.apache.org/bindy.html) permet de convertir des fichiers CSV en objet Java, via des annotations pour définir le séparateur utilisé ou encore les positions des données dans le fichier.
 
@@ -305,7 +305,7 @@ public static <T> List<T> convertCsvToFile(final InputStream is, final Class<T> 
 }
 ```
 
-##Tuto 4 : ErrorHandler
+## Tuto 4 : ErrorHandler
 
 Pour gérer les exceptions qui surviennent et pour éviter les relances à l'infini, il est important de définir un [ErrorHandler](http://camel.apache.org/error-handler.html).
 
@@ -327,7 +327,7 @@ Il est ici défini globalement pour toutes les routes du CamelContext. Au besoin
 
 Il est également possible de définir des règles par [type d'exception](http://camel.apache.org/exception-clause.html) avec la méthode `onException(IOException.class)....to(...`. Idem globalement ou par route.
 
-##Tuto 5 : FTP
+## Tuto 5 : FTP
 
 Le [composant FTP](http://camel.apache.org/ftp2.html) est trés utile et simple d'utilisation.
 
@@ -351,7 +351,7 @@ Toutes les 60 secondes cette route récupérera les fichiers présents dans le r
 
 > Utile : Il est possible de filtrer les fichiers à récupérer avec l'option `?filter=` pointant vers une classe implèmentant l'interface `GenericFileFilter` -> [Plus d'infos](http://camel.apache.org/ftp2.html#FTP2-Filterusingorg.apache.camel.component.file.GenericFileFilter)
 
-##ActiveMQ
+## ActiveMQ
 
 Camel dispose également un [composant ActiveMQ](http://camel.apache.org/activemq.html) permettant de communiquer avec un serveur ActiveMQ des messages sur des *Queue* et *Topic* JMS.
 
@@ -362,7 +362,7 @@ ActiveMQ sera utile pour des applications :
 
 > Utile : Il est possible d'embarquer un serveur ActiveMQ dans l'application -> [Plus d'info](http://activemq.apache.org/how-do-i-embed-a-broker-inside-a-connection.html)
 
-##Pour conclure
+## Pour conclure
 
 Cette présentation pose les bases de l'utilisation de Camel et donne un aperçu des principaux composants, offrants un gain de temps et une facilité de mise en place.
 
